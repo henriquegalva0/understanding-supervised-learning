@@ -11,7 +11,9 @@ On the [first example](fivedegree/) of this repository, we're going to build and
 ### Data
 Firstly, we'll define an array with _x values_ and _y values_ in [gen_data.py](fivedegree/gen_data.py) to create the target that our neural network must recreate. The following five degree function will be our task:
 
-$$x^5 - 6x^3 + 2x$$
+$$
+x^5 - 6x^3 + 2x
+$$
 
 ![f5dg](fivedegree/img/full_5degree.png)
 
@@ -228,7 +230,7 @@ Now, after changing completely our learning rate, epochs and number of neurons, 
 
 ![atc5dg](fivedegree/img/after_training_changes.png)
 
-It's clear that the model could replicate most of the five degree function curve, which shows to us that it's capable of understanding behaviours based on complex patterns.
+It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns.
 
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
@@ -253,4 +255,7 @@ python ./fivedegree/train_model.py
 
 # Additional Notes
 - *Some of the graph plotting codes may not be on the code;*
-- To avoid excessive information, there **will not be any explanatory comments inside the scripts**. All notes are in [README](README.md).
+- All the information used to build this repository can be found in the [PyTorch documentation](https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html);
+- To avoid excessive information, there **will not be any explanatory comments inside the scripts**. All notes are in [README](README.md);
+- Artificial intelligence was not used to build any sort of script in this repository, neither [README](README.md) explanations _(that's why it may contain issues)_;
+- If you find any problems in the code/explanations, feel free to reach me out and share your ideas! I am always open to improvements.
