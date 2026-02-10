@@ -94,7 +94,7 @@ As you see on the graph below: the orange line represents the results that, of c
 
 Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
 
-## Setup
+## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
 ```
 git init
