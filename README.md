@@ -70,7 +70,29 @@ Lastly, inside the class, the feedfoward mechanism merges all the previous data/
 model = main_model()
 ```
 
-Now, our model is almost ready to go. There are still a couple of changes that have to be made. 
+Although our model is ready to go, there're still a couple of changes that have to be made.
+
+### Evaluation (before training)
+
+For educational purposes, we'll be putting our model to the test before the training. Firstly, let's change it's state to an evaluation mode, so as the inference data doesn't conflict with any sort of training data and create a list for the untrained model predictions.
+```
+model.eval()
+y_bpredictions = list()
+```
+Now, the inference script comes in action. For each _x value_ selected from the _x sample values_, the model will, **without gradient (since we don't want to calculate the gradients for retropropagation)**, predict a target _y_ based on a _x_ feature; treat the tensor predicted by creating a new tensor and extracting it's value; appending it to the previous untrained model predictions list.
+```
+for x_feature in x_sample:
+
+    with tt.no_grad():
+        bprediction = model(tt.tensor([x_feature]))
+        treated_bprediction = bprediction.detach().item()
+        y_bpredictions.append(treated_bprediction)
+```
+As you see on the graph below: the orange line represents the results that, of course, aren't good, since the model is completely clueless of what is happening...
+
+![s5dg](fivedegree/img/before_training.png)
+
+Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
 
 -----
 
