@@ -94,8 +94,26 @@ As you see on the graph below: the orange line represents the results that, of c
 
 Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
 
+## Setup
+To run the code and test the neural network model, start by cloning the github repository.
+```
+git init
+git clone https://github.com/henriquegalva0/understanding-supervised-learning.git
+```
+Create a python environment, activate it and install all project requirements.
+```
+python -m venv .venv
+./.venv/Scripts/Activate.ps1
+pip install -r requirements.txt
+```
+Finally, execute the following scripts.
+```
+python ./fivedegree/gen_data.py
+python ./fivedegree/build_model.py
+```
+
 -----
 
 # Additional Notes
-- All requirements are avaiable on [requirements.txt](requirements.txt);
-- To avoid excessive information, there **will not be any comments inside the scripts**. All notes are in [README](README.md).
+- *Some of the graph plotting codes may not be on the code;*
+- To avoid excessive information, there **will not be any explanatory comments inside the scripts**. All notes are in [README](README.md).
