@@ -230,7 +230,11 @@ Now, after changing completely our learning rate, epochs and number of neurons, 
 
 ![atc5dg](fivedegree/img/after_training_changes.png)
 
-It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns.
+It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably...
+
+![nn5dg](fivedegree/img/nn_representation.svg)
+
+This representation was developed using the [AlexNail tool](https://alexlenail.me/NN-SVG/).
 
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
