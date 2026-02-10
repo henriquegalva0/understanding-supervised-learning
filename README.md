@@ -90,7 +90,7 @@ for x_feature in x_sample:
 ```
 As you see on the graph below: the orange line represents the results that, of course, aren't good, since the model is completely clueless of what is happening...
 
-![s5dg](fivedegree/img/before_training.png)
+![bt5dg](fivedegree/img/before_training.png)
 
 Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
 
@@ -173,6 +173,26 @@ Using this line, you can clearly see the change made by the optimizer on the ten
     tensor(44.5663, grad_fn=<MseLossBackward0>)
     tensor(1.9711, grad_fn=<MseLossBackward0>)
 ```
+
+### Evaluation (after training)
+The moment of truth has come. Now we are going to change the mode of the model to evaluation to see how did it went predicting the behaviour of the five degree function after training (the same way we did before training).
+```
+model.eval()
+
+y_apredictions = list()
+
+for x_feature in x_sample:
+
+    with tt.no_grad():
+        bprediction = model(tt.tensor([x_feature]))
+        treated_bprediction = bprediction.detach().item()
+        y_apredictions.append(treated_bprediction)
+```
+And the results... didn't change?
+
+![at5dg](fivedegree/img/after_training.png)
+
+That's because a five degree function has such a complexity that our little neural network can't stand a chance. Let's change a little bit our parameters to see what happens.
 
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.

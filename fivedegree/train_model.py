@@ -1,5 +1,6 @@
 from torch import nn
 import torch as tt
+import matplotlib.pyplot as plt
 
 from build_model import model
 from gen_data import dataloader
@@ -33,3 +34,24 @@ for epoch in range(epochs):
         optimizer.zero_grad()
 
     print(difference)
+
+# - - - - -
+
+model.eval()
+
+y_apredictions = list()
+
+for x_feature in x_sample:
+
+    with tt.no_grad():
+        bprediction = model(tt.tensor([x_feature]))
+        treated_bprediction = bprediction.detach().item()
+        y_apredictions.append(treated_bprediction)
+
+# - - - - -
+
+plt.plot(x_values,y_values)
+plt.plot(x_sample,y_sample,'+',color='red')
+plt.plot(x_sample,y_apredictions)
+plt.savefig('fivedegree/img/after_training.png')
+plt.close()
