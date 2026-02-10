@@ -19,7 +19,7 @@ Now, to train our neural network, it's important to choose a few samples so as i
 
 ![s5dg](fivedegree/img/sample_5degree.png)
 
-Finally, we must initiate the class of our dataset with the previous samples and load the data using pytorch.
+Finally, we must initiate the class of our dataset with the previous samples (now as tensors of 1 dimension) and load the data using pytorch.
 
 ```
 class main_dataset(Dataset):
@@ -29,9 +29,9 @@ class main_dataset(Dataset):
     def __len__(self):
         return len(self.y_sample)
     def __getitem__(self, index):
-        return {
-            'y':self.y_sample[index].unsqueeze(dim=-1),
-            'x':self.x_sample[index].unsqueeze(dim=-1)}
+        y_val = tt.tensor(self.y_sample[index])
+        x_val = tt.tensor(self.x_sample[index])
+        return {'y':y_val.unsqueeze(dim=-1), 'x':x_val.unsqueeze(dim=-1)}
 
 data = main_dataset(x_sample,y_sample)
 dataloader = DataLoader(data, batch_size=2, shuffle=True)
@@ -94,6 +94,86 @@ As you see on the graph below: the orange line represents the results that, of c
 
 Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
 
+## Training
+
+This is the magic part of our first example. Here the model will learn how to reproduce our five degree function.
+
+The first step is to instantiate our loss function (it acts like _"an AI model's teacher"_), set the learning rate and the number of epochs our model will go through.
+```
+loss_function = nn.MSELoss()
+learning_rate = 5e-6
+epochs = 10
+```
+Now, we will not only change our model mode to training mode, but also instantiate the optimizer (responsible for making the values obtained from the loss function useful for the model to learn).
+```
+model.train()
+
+optimizer = tt.optim.SGD(
+    model.parameters(),
+    lr=learning_rate)
+```
+Lastly, let's create the learning looping that our model will repeat for _n epochs_.
+```
+for epoch in range(epochs):
+    
+    for batch in dataloader:
+        y_target_prediction = model(batch['x'])
+        
+        difference = loss_function(y_target_prediction, batch['y'])
+        difference.backward()
+        
+        optimizer.step()
+        optimizer.zero_grad()
+
+    print(difference)
+```
+In details:
+- **for batch in dataloader:**
+When we previously defined our `__getitem__ ` function, the dictionary returned will be loaded by the model as a `batch`.
+```
+    def __getitem__(self, index):
+        y_val = tt.tensor(self.y_sample[index])
+        x_val = tt.tensor(self.x_sample[index])
+        return {'y':y_val.unsqueeze(dim=-1), 'x':x_val.unsqueeze(dim=-1)}
+```
+
+- **y_target_prediction = model(batch['x'])**
+Here, as we defined our `foward` function, the `batch['x']` values will be used to predict a `y_target_prediction` by executing the _"in linear function"_, the _ReLU function_ and the _"out linear function"_ over the _"x"_ feature.
+```
+    def forward(self,x):
+        x = (x-mean)/std
+        x1 = self.in_linear(x)
+        x_temp = self.relu(x1)
+        return self.out_linear(x_temp)
+```
+
+- **difference = loss_function(y_target_prediction, batch['y'])**
+That's the function responsible for telling our model how wrong it is, `y_target_prediction`, from the real target value `batch['y']`.
+
+- **difference.backward()**
+Most known as *retropropagation*, this function calculates all the lost function gradients in relation to the trainable weights and bias of the model, then indicates how much each parameter must be ajusted for the model to have more success.
+
+- **optimizer.step()**
+The gradients obtained previously by `difference.backward()` will be applied to the model and all parameters should be updated.
+
+- **optimizer.zero_grad()**
+Because we're going through multiple batches, we can't sum all of the gradients every loop, so we turn them all to zero after updating the parameters.
+
+- **print(difference)**
+Using this line, you can clearly see the change made by the optimizer on the tensors. The terminal should show something close to the following feedback.
+```
+    tensor(60.3679, grad_fn=<MseLossBackward0>)
+    tensor(51.5132, grad_fn=<MseLossBackward0>)
+    tensor(63.8576, grad_fn=<MseLossBackward0>)
+    tensor(20.4159, grad_fn=<MseLossBackward0>)
+    tensor(31.5784, grad_fn=<MseLossBackward0>)
+    tensor(46.8480, grad_fn=<MseLossBackward0>)
+    tensor(1.9894, grad_fn=<MseLossBackward0>)
+    tensor(1.9903, grad_fn=<MseLossBackward0>)
+    tensor(44.5663, grad_fn=<MseLossBackward0>)
+    tensor(1.9711, grad_fn=<MseLossBackward0>)
+```
+
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
 ```
@@ -110,6 +190,7 @@ Finally, execute the following scripts.
 ```
 python ./fivedegree/gen_data.py
 python ./fivedegree/build_model.py
+python ./fivedegree/train_model.py
 ```
 
 -----

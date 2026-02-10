@@ -1,3 +1,4 @@
+import torch as tt
 import random as rd
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
@@ -11,8 +12,10 @@ class main_dataset(Dataset):
     def __len__(self):
         return len(self.y_sample)
     def __getitem__(self, index):
-        return {'y':self.y_sample[index].unsqueeze(dim=-1), 'x':self.x_sample[index].unsqueeze(dim=-1)}
-
+        y_val = tt.tensor(self.y_sample[index])
+        x_val = tt.tensor(self.x_sample[index])
+        return {'y':y_val.unsqueeze(dim=-1), 'x':x_val.unsqueeze(dim=-1)}
+    
 # - - - - -
 
 def sample_function(x):
