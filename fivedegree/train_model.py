@@ -9,8 +9,8 @@ from gen_data import x_sample,y_sample,x_values,y_values
 # - - - - -
 
 loss_function = nn.MSELoss()
-learning_rate = 5e-6
-epochs = 10
+learning_rate = 1e-3
+epochs = 500
 
 # - - - - -
 

@@ -194,6 +194,42 @@ And the results... didn't change?
 
 That's because a five degree function has such a complexity that our little neural network can't stand a chance. Let's change a little bit our parameters to see what happens.
 
+## Changing Parameters
+
+The first thing we must do is: in the architecture of the neural network, inside [build_model.py](fivedegree/build_model.py), there must be a new layer with many more neurons (for example **32 neurons**) with the activation function called between the `in, mid` and `out linears`.
+```
+class main_model(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.in_linear = nn.Linear(1,32,bias=True)
+        self.mid_linear = nn.Linear(32,32,bias=True)
+        self.out_linear = nn.Linear(32,1,bias=True)
+        self.relu = nn.ReLU()
+    
+    def forward(self,x):
+        x = (x-mean)/std
+        x1 = self.relu(self.in_linear(x))
+        x2 = self.relu(self.mid_linear(x1))
+        return self.out_linear(x2)
+```
+Then, we will change a few numbers on the optimizer values inside [train_model.py](fivedegree/train_model.py).
+```
+loss_function = nn.MSELoss()
+learning_rate = 1e-3
+epochs = 500
+```
+With a bigger learning rate, the model's parameters will be changed quickly and intensely. Furthermore, it will have more time to learn, since we increased the epochs to 500.
+
+**Disclaimer:** You must keep in mind that while training bigger or smaller models for more or less complex tasks, these values and parameters should always be quite different.
+
+### Evaluation (changing parameters)
+
+Now, after changing completely our learning rate, epochs and number of neurons, the results are completely different.
+
+![atc5dg](fivedegree/img/after_training_changes.png)
+
+It's clear that the model could replicate most of the five degree function curve, which shows to us that it's capable of understanding behaviours based on complex patterns.
+
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
 ```

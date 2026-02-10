@@ -14,15 +14,16 @@ std = x_sample.std()
 class main_model(nn.Module):
     def __init__(self):
         super().__init__()
-        self.in_linear = nn.Linear(1,2,bias=True)
+        self.in_linear = nn.Linear(1,32,bias=True)
+        self.mid_linear = nn.Linear(32,32,bias=True)
+        self.out_linear = nn.Linear(32,1,bias=True)
         self.relu = nn.ReLU()
-        self.out_linear = nn.Linear(2,1,bias=True)
     
     def forward(self,x):
         x = (x-mean)/std
-        x1 = self.in_linear(x)
-        x_temp = self.relu(x1)
-        return self.out_linear(x_temp)
+        x1 = self.relu(self.in_linear(x))
+        x2 = self.relu(self.mid_linear(x1))
+        return self.out_linear(x2)
 
 # - - - - -
 
