@@ -321,7 +321,7 @@ This plot of our sample data shows how little and noisy the information given to
 
 The archicteture used to build and train our model will be the same as in [build_model.py](fivedegree/build_model.py]) and [train_model.py](fivedegree/train_model.py]), however we'll be running a couple of experiments with the size of the neural network.
 
-Inside [train_model.py](fivedegree_gaussiannoise/train_model.py]), the number of neurons will be changed for 16, 32 and 64 for 2 hidden layers, then, 3 hidden layers.
+Within the file [train_model.py](fivedegree_gaussiannoise/train_model.py), the number of neurons will be changed to 16, 32, and 64 for 2 hidden layers, and then for 3 hidden layers. This manual change is called **Grid Search** and is not the most efficient way to find the ideal neural network architecture, but it clearly shows the difference between each one (great for technical analyses within a research repository).
 
 
 ## Setup Instructions (Second Example)
