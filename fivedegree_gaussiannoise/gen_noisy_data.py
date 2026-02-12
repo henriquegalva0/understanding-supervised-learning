@@ -14,8 +14,8 @@ class noisy_dataset(Dataset):
     def __len__(self):
         return len(self.y_sample)
     def __getitem__(self, index):
-        x_tensor = tt.tensor(self.x_sample[index])
-        y_tensor = tt.tensor(self.y_sample[index])
+        x_tensor = tt.tensor(self.x_sample[index],dtype=tt.float32)
+        y_tensor = tt.tensor(self.y_sample[index],dtype=tt.float32)
         return {'x':x_tensor.unsqueeze(dim=-1),'y':y_tensor.unsqueeze(dim=-1)}
 
 # - - - - -

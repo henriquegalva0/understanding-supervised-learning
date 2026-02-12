@@ -288,7 +288,7 @@ On the [first example](fivedegree/), we solved our task optimizing a neural netw
 
 Even though the pattern created by selected values from a five degree function is quite complex to understand, if you train with clean data, eventually your model will catch up and easily recognize the pattern.
 
-The task now is to make the learning path of our model harder. We're adding _gaussian noise_ (or white noise) to the data sample.
+The task now is to make the learning path of our model harder. We're adding _gaussian noise_ (or white noise) to the data sample in [gen_noisy_data.py](fivedegree_gaussiannoise/gen_noisy_data.py).
 
 $$y_{noisy} = y_{true} + \epsilon$$
 
@@ -316,6 +316,13 @@ y_sample = y_values[target_values]
 This plot of our sample data shows how little and noisy the information given to the model is right now. Now, the real mission is to study the behaviour of our model facing this problem:
 
 * Will our model suffer from **overfitting**? In other words, will the model memorize the noise and replicate it, or will it develop a robust regression?
+
+## Model
+
+The archicteture used to build and train our model will be the same as in [build_model.py](fivedegree/build_model.py]) and [train_model.py](fivedegree/train_model.py]), however we'll be running a couple of experiments with the size of the neural network.
+
+Inside [train_model.py](fivedegree_gaussiannoise/train_model.py]), the number of neurons will be changed for 16, 32 and 64 for 2 hidden layers, then, 3 hidden layers.
+
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
