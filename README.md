@@ -258,7 +258,7 @@ It's clear that the model could replicate most of the five degree function curve
 
 _This 4 layers & 32 neurons neural network diagram was developed using the [AlexNail tool](https://alexlenail.me/NN-SVG/)._
 
-## Setup Instructions
+## Setup Instructions (First Example)
 To run the code and test the neural network model, start by cloning the github repository.
 ```
 git init
@@ -275,6 +275,63 @@ Finally, execute the following scripts.
 python ./fivedegree/gen_data.py
 python ./fivedegree/build_model.py
 python ./fivedegree/train_model.py
+```
+
+-----
+
+# Gaussian Noise
+
+## Mission
+On the [first example](fivedegree/), we solved our task optimizing a neural network to understand the behaviour of a five degree function. Now, the task is quite the same, except for the fact that the data won't be so clean to read.
+
+### Data
+
+Even though the pattern created by selected values from a five degree function is quite complex to understand, if you train with clean data, eventually your model will catch up and easily recognize the pattern.
+
+The task now is to make the learning path of our model harder. We're adding _gaussian noise_ (or white noise) to the data sample.
+
+$$y_{noisy} = y_{true} + \epsilon$$
+
+The noise factor over our data will be given by random normalized values obtained from a gaussian distribution added to `y_clean`, which is the previous defined `f(x)`, but now with **300 sample values** going from `-3` to `3` to study how the noise affects the model.
+
+$$f(x) = x^5 - 6x^3 + 2x $$
+
+With that, the following code will be responsible for adding noise to the clean data.
+
+```
+sigma = 0.5
+noise = np.random.normal(0,sigma, y_clean.shape)
+y_values = y_clean + noise
+```
+
+Ultimately, we'll be selecting only **one tenth** of our full dataset for the training _(we'll be using `target_values = np.random.permutation(300)[:30]` to avoid duplicating sample values)_.
+
+```
+x_sample = x_values[target_values]
+y_sample = y_values[target_values]
+```
+
+![sfdn](fivedegree_gaussiannoise/img/sample_noisy.png)
+
+This plot of our sample data shows how little and noisy the information given to the model is right now. Now, the real mission is to study the behaviour of our model facing this problem:
+
+* Will our model suffer from **overfitting**? In other words, will the model memorize the noise and replicate it, or will it develop a robust regression?
+
+## Setup Instructions (Second Example)
+To run the code, if you haven't done this yet, start by cloning the github repository.
+```
+git init
+git clone https://github.com/henriquegalva0/understanding-supervised-learning.git
+```
+Create a python environment, activate it and install all project requirements.
+```
+python -m venv .venv
+./.venv/Scripts/Activate.ps1
+pip install -r requirements.txt
+```
+Finally, execute the following scripts to run the **second example**.
+```
+python ./fivedegree_gaussiannoise/gen_noisy_data.py
 ```
 
 -----
