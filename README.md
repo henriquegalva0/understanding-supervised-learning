@@ -11,13 +11,11 @@ On the [first example](fivedegree/) of this repository, we're going to build and
 ### Data
 Firstly, we'll define an array with _x values_ and _y values_ in [gen_data.py](fivedegree/gen_data.py) to create the target that our neural network must recreate. The following five degree function will be our task:
 
-$$
-x^5 - 6x^3 + 2x
-$$
+$$f(x) = x^5 - 6x^3 + 2x $$
 
 ![f5dg](fivedegree/img/full_5degree.png)
 
-Now, to train our neural network, it's important to choose a few samples so as it don't get overfitted. In our example, we'll work with **30 random samples**:
+Now, to train our neural network, it's important to choose a few samples so as it don't get overfitted, neither "easy" to understand. In our example, we'll work with **30 random samples** from **100 total samples**:
 
 ![s5dg](fivedegree/img/sample_5degree.png)
 
@@ -45,11 +43,13 @@ Our data is ready to be used!
 
 Now, with the _x samples_ and _y samples_, we'll develop our model's class. In [build_model.py](fivedegree/build_model.py), we are defining the activation function [ReLU](https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html):
 
-$$
-\mathrm{ReLU}(x) = \max(0, x)
-$$
+$$ \mathrm{ReLU}(x) = \max(0, x) $$
 
 Also, the _in & out_ layers of our neural network (2 intermediate features):
+
+$$ y = xA^T + b $$
+
+This linear function will be repeated 3 times for each layer of neurons. It is responsible for calculating the dot product between our _`x` features_ and _weights matrix_ $A^T$, plus a _bias_ _`b`_.
 
 ```
 class main_model(nn.Module):
@@ -60,7 +60,11 @@ class main_model(nn.Module):
         self.out_linear = nn.Linear(2,1,bias=True)
 ```
 
-Lastly, inside the class, the feedfoward mechanism merges all the previous data/functions by normalizing the x sample, inseting it in the first layer and temporarily going throw the activation function.
+Lastly, inside the class, the feed forward mechanism merges all the previous data/functions by standardization ($Z$-score):
+
+$$z = \frac{x - \mu}{\sigma}$$
+
+on each `x` sample, inserting it in the first layer, and going throw the activation function.
 
 ```
     def forward(self,x):
@@ -98,15 +102,26 @@ Now, our task is to train and optimize the model's parameters until it is capabl
 
 ## Training
 
-This is the magic part of our first example. Here the model will learn how to reproduce our five degree function.
+This is the magic part of our first example. Here the model will learn how to reproduce our five degree function. The first step is to instantiate our loss function.
 
-The first step is to instantiate our loss function (it acts like _"an AI model's teacher"_), set the learning rate and the number of epochs our model will go through.
+$$ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
+This function calculates the mean squared error (_MSE, Quadratic Loss or L2 Loss_) returned by our model - when comparing the data predicted to the real data.
+
 ```
 loss_function = nn.MSELoss()
+```
+
+**Disclaimer:** There are many loss functions in Machine Learning; this example is just one interesting approach you can choose.
+
+We will also set the learning rate and the number of epochs that our model will go through.
+```
 learning_rate = 5e-6
 epochs = 10
 ```
-Now, we will not only change our model mode to training mode, but also instantiate the optimizer (responsible for making the values obtained from the loss function useful for the model to learn).
+
+Now, we will not only change our model mode to training mode, but also instantiate **the optimizer**.
+
 ```
 model.train()
 
@@ -114,7 +129,14 @@ optimizer = tt.optim.SGD(
     model.parameters(),
     lr=learning_rate)
 ```
-Lastly, let's create the learning looping that our model will repeat for _n epochs_.
+
+The optimizer that I've selected is the _Stochastic Gradient Descent (SGD)_, which will go through all batches of data _"giving directions"_. The picture bellow represents the effects of batch sizes and learning rates to the _SGD_'s behaviour. The arrows are directions given by our loss function which will guide ours model parameters to be more accurate.
+
+![sgdfd](fivedegree/img/sgd_representation.png)
+*[Image font](https://www.researchgate.net/figure/This-figure-Shows-multi-SGD-optimizer_fig3_327135988) - This diagram doesn't show exactly how __our optimizer__ is handling our learning rate and batch size. It's merely a representation.*
+
+Lastly, let's create the learning looping that our model will repeat for `n epochs` defined previously.
+
 ```
 for epoch in range(epochs):
     
@@ -136,7 +158,7 @@ When we previously defined our `__getitem__ ` function, the dictionary returned 
     def __getitem__(self, index):
         y_val = tt.tensor(self.y_sample[index])
         x_val = tt.tensor(self.x_sample[index])
-        return {'y':y_val.unsqueeze(dim=-1), 'x':x_val.unsqueeze(dim=-1)}
+        return {'y':y_val.unsqueeze(dim=-1), 'x':x_val.unsqueeze(dim=-1)} ---> each batch
 ```
 
 - **y_target_prediction = model(batch['x'])**
@@ -226,15 +248,15 @@ With a bigger learning rate, the model's parameters will be changed quickly and 
 
 ### Evaluation (changing parameters)
 
-Now, after changing completely our learning rate, epochs and number of neurons, the results are completely different.
+After changing completely our _learning rate, epochs_ and _number of neurons_, the results are completely different. As we saw earlier, our optimizer is strongly affected by the architecture, learning rate and batches, so the only work we had to do was turning the _"gradient directions"_ more effective to efficiently change the model's parameters.
 
 ![atc5dg](fivedegree/img/after_training_changes.png)
 
-It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably...
+It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably as you may see on diagram bellow...
 
 ![nn5dg](fivedegree/img/nn_representation.svg)
 
-This representation was developed using the [AlexNail tool](https://alexlenail.me/NN-SVG/).
+_This 4 layers & 32 neurons neural network diagram was developed using the [AlexNail tool](https://alexlenail.me/NN-SVG/)._
 
 ## Setup Instructions
 To run the code and test the neural network model, start by cloning the github repository.
