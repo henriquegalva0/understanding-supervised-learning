@@ -525,6 +525,34 @@ The model presents a classic case of overfitting. Instead of learning the fifth 
 
 As a result, the model lost its ability to generalize, failing especially in extrapolating values ​​at the end of the interval. Although this problem was expected, we'll now develop a **simple but effective solution**.
 
+#### Weight Decay Solution
+Although the number of epochs and the learning rate are affecting the current state of overfitting of our model, the solution lies elsewhere.
+
+The **Weight Decay (or L2 regularization)** is a technique used to penalize the model's loss every time it suddenly tries to change the weights to extremely high or complex numbers when the model tries to mimic the noise behaviour.
+
+$$Loss_{total} = Loss_{prediction} + \lambda \sum w^2$$
+
+$\lambda$ (lambda) is our regularization coeficient which tends to be a small value.
+
+Inside [better_model.py](/fivedegree_gaussiannoise/better_model.py), we'll firstly initialize our `weight_decay`, then add directly to the optimizer the following defined function `weight_decay=weight_decay`.
+
+```
+weight_decay = 1e-4
+
+optimizer = tt.optim.Adam(
+    model.parameters(),
+    lr=learning_rate,
+    weight_decay=weight_decay)
+```
+
+With this little change, our model should be able to understand properly the data without trying to follow the noise. This solution also makes our results smoother and makes the model really understand the data.
+
+### Evaluation (Weight Decay Noisy Model)
+![rwdfdn](./fivedegree_gaussiannoise/results/loss-epochs-wd.png)
+Again, our loss function is completely normal showing the evolution of our model.
+![rwdfdn](./fivedegree_gaussiannoise/results/training_results_wd.png)
+This is one of our best performances until now! We can see clearly our model's ability to generalize. However it seens it got a bit too affected by the ``weight_decay`` value. For that, let's try again doing a grid research finding the best epoch number and weight decay combination!  
+
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
 ```

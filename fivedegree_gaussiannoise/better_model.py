@@ -44,6 +44,7 @@ loss_function = nn.MSELoss()
 loss_history = list()
 learning_rate = 1e-3
 epochs = 1000
+weight_decay = 1e-4
 
 # - - - - -
 
@@ -51,7 +52,8 @@ model.train()
 
 optimizer = tt.optim.Adam(
     model.parameters(),
-    lr=learning_rate)
+    lr=learning_rate,
+    weight_decay=weight_decay)
 
 # - - - - -
 
@@ -79,7 +81,7 @@ for epoch in range(epochs):
 plt.plot(range(epochs), loss_history)
 plt.xlabel('epoch')
 plt.ylabel('Loss (MSE)')
-plt.savefig('fivedegree_gaussiannoise/results/loss-epochs.png')
+plt.savefig('fivedegree_gaussiannoise/results/loss-epochs-wd.png')
 plt.close()
 
 # - - - - -
@@ -99,5 +101,5 @@ for x_feature in x_sample:
 plt.plot(x_values,y_clean)
 plt.plot(x_sample,y_sample,'+',color='red')
 plt.plot(x_sample,y_predictions)
-plt.savefig('fivedegree_gaussiannoise/results/training_results.png')
+plt.savefig('fivedegree_gaussiannoise/results/training_results_wd.png')
 plt.close()
