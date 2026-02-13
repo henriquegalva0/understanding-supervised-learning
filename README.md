@@ -483,6 +483,29 @@ for batch in dataloader:
 
 When we evaluate the model, the ``y_predictions`` must be denormalized to avoid problems while plotting.
 
+### Adam optimizer
+The Adam optimizer or _Adaptive Moment Optimization_ is a popular optimization algorithm that computes adaptive learning rates for each parameter by maintaining moving averages of both the gradients and their squared values. This concept of moving averages is called **momentum** and wasn't being used previously in our script.
+
+![adamfdn](/fivedegree_gaussiannoise/img/adamfunctions.png)
+
+[Explanation and image font](https://www.digitalocean.com/community/tutorials/intro-to-optimization-momentum-rmsprop-adam)
+
+Here, we compute the exponential average of the gradient as well as the squares of the gradient for each parameters.
+
+To decide our learning step, we multiply our learning rate by average of the gradient and divide it by the root mean square of the exponential average of square of gradients. Then, we add the update.
+
+Adam is faster than SGD in this specific task, since it uses adaptive learning rates and momentum, which handles deeper architectures much more effectively.
+
+To change the code, we must only change `SGD` to `Adam` in the optimizer:
+
+```
+optimizer = tt.optim.Adam(
+    model.parameters(),
+    lr=learning_rate)
+```
+
+We are ready to finally see how our new improved model will deal with noisy data!
+
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
 ```

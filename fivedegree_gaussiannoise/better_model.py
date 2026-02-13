@@ -49,7 +49,7 @@ epochs = 500
 
 model.train()
 
-optimizer = tt.optim.SGD(
+optimizer = tt.optim.Adam(
     model.parameters(),
     lr=learning_rate)
 
