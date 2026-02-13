@@ -46,9 +46,3 @@ y_sample = y_values[target_values]
 
 data = noisy_dataset(x_sample,y_sample)
 dataloader = DataLoader(data, batch_size=2, shuffle=True)
-
-# - - - - -
-
-plt.plot(x_sample,y_sample,'+')
-plt.savefig('fivedegree_gaussiannoise/img/sample_noisy.png')
-plt.close()

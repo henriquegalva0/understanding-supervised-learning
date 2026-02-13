@@ -377,6 +377,18 @@ Although we can easily solve the problems of this three hidden layer model, this
 
 Our idea should be to **improve** the 2-layer-32-neuron model since it showed us his capability of solving problems.
 
+## Improved Model
+
+To make our model better and improve the overall mapping, we'll have to change some scripts and parameters: 
+
+* __Noisier data:__ The noise added to our data isn't relative to the function interval, so the values _"aren't making the curve so noisy"_ since they're little compared to `y_values`.
+* __Weight initialization:__ Sometimes, the initial random weights can affect the entire gradient, since our functions are extremely sensitive.
+* __Loss mapping:__ We aren't seeing what is happening to the loss function. We must plot its evolution.
+* __Activation function:__ Our lines are extremely blocky and sharp, let's the ReLU function to something more smoother. 
+* __Adam optimizer:__ The SGD optimizer is good, but suffers dealing with more complex problems, let's also change it.
+
+### Noisier data
+
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
 ```
