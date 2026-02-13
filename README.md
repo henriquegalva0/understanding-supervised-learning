@@ -60,7 +60,7 @@ class main_model(nn.Module):
         self.out_linear = nn.Linear(2,1,bias=True)
 ```
 
-Lastly, inside the class, the feed forward mechanism merges all the previous data/functions by standardization ($Z$-score):
+Lastly, inside the class, the feed forward mechanism merges all the previous data/functions by normalization ($Z$-score):
 
 $$z = \frac{x - \mu}{\sigma}$$
 
@@ -379,15 +379,109 @@ Our idea should be to **improve** the 2-layer-32-neuron model since it showed us
 
 ## Improved Model
 
-To make our model better and improve the overall mapping, we'll have to change some scripts and parameters: 
+To make our model better and improve the overall mapping, we'll have to change some scripts and parameters in [better_model.py](/fivedegree_gaussiannoise/better_model.py): 
 
 * __Noisier data:__ The noise added to our data isn't relative to the function interval, so the values _"aren't making the curve so noisy"_ since they're little compared to `y_values`.
 * __Weight initialization:__ Sometimes, the initial random weights can affect the entire gradient, since our functions are extremely sensitive.
 * __Loss mapping:__ We aren't seeing what is happening to the loss function. We must plot its evolution.
 * __Activation function:__ Our lines are extremely blocky and sharp, let's the ReLU function to something more smoother. 
+* __Normalizing Targets:__ The `y_values` aren't normalized, so the gradient values tend to increase exponentially. This may affect smaller models.
 * __Adam optimizer:__ The SGD optimizer is good, but suffers dealing with more complex problems, let's also change it.
 
 ### Noisier data
+
+Instead of defining ``sigma = 0.5``, let's simply take the standard deviation of `y_clean` values and multiply by `0.2` then apply it to the noise function.
+```
+sigma = y_clean.std() * 0.2
+noise = np.random.normal(0, sigma, size=y_clean.shape).astype(np.float32)
+y_values = y_clean + noise
+```
+
+Now, our data is really fuzzy!
+
+![sbnfdn](/fivedegree_gaussiannoise/img/sample_betternoisy.png)
+
+### Weight initialization
+Pytorch always initialize weights in a general way that allows almost every kind of neural network to use them. However, for our activation function ReLU (mainly due to negative weight values), there is a better option:
+
+```
+def init_weights(m):
+    if isinstance(m, nn.Linear):
+        tt.nn.init.xavier_uniform_(m.weight)
+        m.bias.data.fill_(0.01)
+```
+
+Xavier's uniform initialization prevents the weights to be at a _"dead state"_. Thus, we'll be using it inside our neural network.
+
+```
+model.apply(init_weights)
+```
+
+### Loss mapping
+Currently we can't see what is happening to the loss function, so we'll add a script to plot its behaviour throughout the epochs.
+
+Inside the epoch's loop, we'll calculate the mean of the differences given by the loss_function, then add everything to a list that will soon be plotted.
+
+```
+epoch_loss = 0
+
+for batch in dataloader:
+                ...
+    epoch_loss += difference.item()
+
+loss_history.append(epoch_loss / len(dataloader))
+
+plt.plot(range(epochs), loss_history)
+plt.xlabel('epoch')
+plt.ylabel('Loss (MSE)')
+plt.savefig('fivedegree_gaussiannoise/img/loss-epochs.png')
+```
+
+### Activation function
+The _Rectified Linear Unit (ReLU)_ activation function will be changed to the Hyperbolic Tangent Function:
+
+$$\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$$
+
+Seeing that S-shaped curves naturally handle the bends of a polynomial better than the sharp "hinge" of ReLU.
+
+![rxtfdn](/fivedegree_gaussiannoise/img/reluxtanh.png)
+
+To change the script, we simply change `self.ReLU = tt.nn.ReLU()` to `self.Tanh = tt.nn.Tanh()` inside the class `class bettermodel(tt.nn.Module)`.
+
+```
+def __init__(self):
+            ...
+    self.Tanh = tt.nn.Tanh()
+
+def forward(self,x):
+    x = (x-mean)/std
+    x1 = self.Tanh(self.linear1(x))
+    x2 = self.Tanh(self.linear2(x1))
+    return self.linear3(x2)
+```
+
+### Normalizing Targets
+At the start of [better_model.py](/fivedegree_gaussiannoise/better_model.py), we'll be adding the info to normalize `y_values`:
+
+```
+mean_y = y_sample.mean()
+std_y = y_sample.std()
+```
+
+Seen that normalization ($Z$-score):
+
+$$z = \frac{x - \mu}{\sigma}$$
+
+After that, inside the epoch's loop, we'll call the `loss_function` to the y batch normalized.
+
+```
+for batch in dataloader:
+    y_normalized = (batch['y'] - mean_y) / std_y
+    y_target_prediction = model(batch['x'])
+    difference = loss_function(y_target_prediction, y_normalized)
+```
+
+When we evaluate the model, the ``y_predictions`` must be denormalized to avoid problems while plotting.
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
@@ -415,5 +509,4 @@ python ./fivedegree_gaussiannoise/train_model.py
 - *Some of the graph plotting codes may not be on the code;*
 - All the information used to build this repository can be found in the [PyTorch documentation](https://docs.pytorch.org/tutorials/beginner/basics/optimization_tutorial.html);
 - To avoid excessive information, there **will not be any explanatory comments inside the scripts**. All notes are in [README](README.md);
-- Artificial intelligence was not used to build any sort of script in this repository, neither [README](README.md) explanations _(that's why it may contain issues)_;
 - If you find any problems in the code/explanations, feel free to reach me out and share your ideas! I am always open to improvements.

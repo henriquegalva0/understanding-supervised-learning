@@ -30,8 +30,8 @@ y_clean = sample_function(x_values)
 
 # - - - - -
 
-sigma = 0.5
-noise = np.random.normal(0,sigma, y_clean.shape)
+sigma = y_clean.std() * 0.2
+noise = np.random.normal(0, sigma, size=y_clean.shape).astype(np.float32)
 y_values = y_clean + noise
 
 # - - - - -
@@ -46,3 +46,9 @@ y_sample = y_values[target_values]
 
 data = noisy_dataset(x_sample,y_sample)
 dataloader = DataLoader(data, batch_size=2, shuffle=True)
+
+# - - - - -
+
+plt.plot(x_sample,y_sample,'+')
+plt.savefig('fivedegree_gaussiannoise/img/sample_betternoisy.png')
+plt.close()
