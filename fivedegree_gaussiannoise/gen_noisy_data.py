@@ -1,6 +1,5 @@
 import torch as tt
 import numpy as np
-import random as rd
 import matplotlib.pyplot as plt
 
 from torch.utils.data import DataLoader, Dataset
@@ -8,7 +7,7 @@ from torch.utils.data import DataLoader, Dataset
 # - - - - -
 
 class noisy_dataset(Dataset):
-    def __init__(self,x_sample,y_values):
+    def __init__(self,x_sample,y_sample):
         self.x_sample = x_sample
         self.y_sample = y_sample
     def __len__(self):

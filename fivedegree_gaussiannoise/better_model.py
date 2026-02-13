@@ -43,7 +43,7 @@ model.apply(init_weights)
 loss_function = nn.MSELoss()
 loss_history = list()
 learning_rate = 1e-3
-epochs = 500
+epochs = 1000
 
 # - - - - -
 
@@ -70,6 +70,7 @@ for epoch in range(epochs):
         optimizer.zero_grad()
 
         epoch_loss += difference.item()
+    print(difference)
 
     loss_history.append(epoch_loss / len(dataloader))
 
@@ -78,4 +79,25 @@ for epoch in range(epochs):
 plt.plot(range(epochs), loss_history)
 plt.xlabel('epoch')
 plt.ylabel('Loss (MSE)')
-plt.savefig('fivedegree_gaussiannoise/img/loss-epochs.png')
+plt.savefig('fivedegree_gaussiannoise/results/loss-epochs.png')
+plt.close()
+
+# - - - - -
+
+model.eval()
+
+y_predictions = list()
+
+for x_feature in x_sample:
+    with tt.no_grad():
+        prediction = model(tt.tensor([x_feature]).float())
+        denormalized_prediction = (prediction.item() * std_y) + mean_y
+        y_predictions.append(denormalized_prediction)
+
+# - - - - -
+
+plt.plot(x_values,y_clean)
+plt.plot(x_sample,y_sample,'+',color='red')
+plt.plot(x_sample,y_predictions)
+plt.savefig('fivedegree_gaussiannoise/results/training_results.png')
+plt.close()

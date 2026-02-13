@@ -388,7 +388,7 @@ To make our model better and improve the overall mapping, we'll have to change s
 * __Normalizing Targets:__ The `y_values` aren't normalized, so the gradient values tend to increase exponentially. This may affect smaller models.
 * __Adam optimizer:__ The SGD optimizer is good, but suffers dealing with more complex problems, let's also change it.
 
-### Noisier data
+#### Noisier data
 
 Instead of defining ``sigma = 0.5``, let's simply take the standard deviation of `y_clean` values and multiply by `0.2` then apply it to the noise function.
 ```
@@ -401,7 +401,7 @@ Now, our data is really fuzzy!
 
 ![sbnfdn](/fivedegree_gaussiannoise/img/sample_betternoisy.png)
 
-### Weight initialization
+#### Weight initialization
 Pytorch always initialize weights in a general way that allows almost every kind of neural network to use them. However, for our activation function ReLU (mainly due to negative weight values), there is a better option:
 
 ```
@@ -417,7 +417,7 @@ Xavier's uniform initialization prevents the weights to be at a _"dead state"_. 
 model.apply(init_weights)
 ```
 
-### Loss mapping
+#### Loss mapping
 Currently we can't see what is happening to the loss function, so we'll add a script to plot its behaviour throughout the epochs.
 
 Inside the epoch's loop, we'll calculate the mean of the differences given by the loss_function, then add everything to a list that will soon be plotted.
@@ -437,7 +437,7 @@ plt.ylabel('Loss (MSE)')
 plt.savefig('fivedegree_gaussiannoise/img/loss-epochs.png')
 ```
 
-### Activation function
+#### Activation function
 The _Rectified Linear Unit (ReLU)_ activation function will be changed to the Hyperbolic Tangent Function:
 
 $$\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$$
@@ -460,7 +460,7 @@ def forward(self,x):
     return self.linear3(x2)
 ```
 
-### Normalizing Targets
+#### Normalizing Targets
 At the start of [better_model.py](/fivedegree_gaussiannoise/better_model.py), we'll be adding the info to normalize `y_values`:
 
 ```
@@ -483,7 +483,7 @@ for batch in dataloader:
 
 When we evaluate the model, the ``y_predictions`` must be denormalized to avoid problems while plotting.
 
-### Adam optimizer
+#### Adam optimizer
 The Adam optimizer or _Adaptive Moment Optimization_ is a popular optimization algorithm that computes adaptive learning rates for each parameter by maintaining moving averages of both the gradients and their squared values. This concept of moving averages is called **momentum** and wasn't being used previously in our script.
 
 ![adamfdn](/fivedegree_gaussiannoise/img/adamfunctions.png)
@@ -505,6 +505,25 @@ optimizer = tt.optim.Adam(
 ```
 
 We are ready to finally see how our new improved model will deal with noisy data!
+
+### Evaluation (Improved Noisy Model)
+To translate the normalized `y_predictions` we will multiply the values by `std_y` plus `mean_y`.
+```
+prediction = model(tt.tensor([x_feature]).float())
+denormalized_prediction = (prediction.item() * std_y) + mean_y
+y_predictions.append(denormalized_prediction)
+```
+And, for better results, let's increase the epochs to `1000` but keep the other hyperparameters still (`learning_rate = 1e-3`).
+
+![lossfdn](/fivedegree_gaussiannoise/results/loss-epochs.png)
+
+Our loss function is excellent! We can clearly see that the model is learning correctly, as the _mean squared error_ (loss) is **decreasing**.
+
+![rfdn](/fivedegree_gaussiannoise/results/training_results.png)
+
+The model presents a classic case of overfitting. Instead of learning the fifth degree function behaviour, the 32-neuron network **memorized the random fluctuations** of the training data. This is evidenced by the **loss of smoothness** in the orange curve, which oscillates to reach specific noise points.
+
+As a result, the model lost its ability to generalize, failing especially in extrapolating values ​​at the end of the interval. Although this problem was expected, we'll now develop a **simple but effective solution**.
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
