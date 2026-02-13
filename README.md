@@ -98,6 +98,10 @@ As you see on the graph below: the orange line represents the results that, of c
 
 ![bt5dg](fivedegree/img/before_training.png)
 
+* Red Dots: Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
 Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the fifth degree function.
 
 ## Training
@@ -216,6 +220,10 @@ And the results... didn't change?
 
 ![at5dg](fivedegree/img/after_training.png)
 
+* Red Dots: Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
 That's because a fifth degree function has such a complexity that our little neural network can't stand a chance. Let's change a little bit our parameters to see what happens.
 
 ## Changing Parameters
@@ -251,6 +259,10 @@ With a bigger learning rate, the model's parameters will be changed quickly and 
 After changing completely our _learning rate, epochs_ and _number of neurons_, the results are completely different. As we saw earlier, our optimizer is strongly affected by the architecture, learning rate and batches, so the only work we had to do was turning the _"gradient directions"_ more effective to efficiently change the model's parameters.
 
 ![atc5dg](fivedegree/img/after_training_changes.png)
+
+* Red Dots: Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
 
 It's clear that the model could replicate most of the fifth degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably as you may see on diagram bellow...
 
@@ -344,6 +356,10 @@ class two_layer_model(tt.nn.Module):
 Keeping the same `learning rate` and `epochs` we are ready to see the **evaluation** results of the "_noisy models_":
 
 ![tgfdn](/fivedegree_gaussiannoise/img/training_grid.png)
+
+* Red Dots: Noisy Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
 
 What an output we got! Let's understand each results...
 
@@ -521,6 +537,10 @@ Our loss function is excellent! We can clearly see that the model is learning co
 
 ![rfdn](/fivedegree_gaussiannoise/results/training_results.png)
 
+* Red Dots: Noisy Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
 The model presents a classic case of overfitting. Instead of learning the fifth degree function behaviour, the 32-neuron network **memorized the random fluctuations** of the training data. This is evidenced by the **loss of smoothness** in the orange curve, which oscillates to reach specific noise points.
 
 As a result, the model lost its ability to generalize, failing especially in extrapolating values ​​at the end of the interval. Although this problem was expected, we'll now develop a **simple but effective solution**.
@@ -548,10 +568,54 @@ optimizer = tt.optim.Adam(
 With this little change, our model should be able to understand properly the data without trying to follow the noise. This solution also makes our results smoother and makes the model really understand the data.
 
 ### Evaluation (Weight Decay Noisy Model)
+
 ![rwdfdn](./fivedegree_gaussiannoise/results/loss-epochs-wd.png)
+
 Again, our loss function is completely normal showing the evolution of our model.
+
 ![rwdfdn](./fivedegree_gaussiannoise/results/training_results_wd.png)
+* Red Dots: Noisy Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
 This is one of our best performances until now! We can see clearly our model's ability to generalize. However it seens it got a bit too affected by the ``weight_decay`` value. For that, let's try again doing a grid research finding the best epoch number and weight decay combination!  
+
+### Evaluation (Grid | Epoch vs Weight Decay)
+To ultimately evaluate and train our models, the following script was created: [grid_weightdecay.py](./fivedegree_gaussiannoise/grid_weightdecay.py). We will evaluate 6 models, 3 training with 500 epochs and other 3 training with 1000 epochs. In each group, the 3 will be trained with a weight decay of $1e-3$,$1e-4$ and $1e-5$, respectively. First to 32 neurons neural networks, then to 16 neurons.
+
+```
+def train_eval(wd,ep,selected_model):
+                ...   
+    optimizer = tt.optim.Adam(
+        selected_model.parameters(),
+        lr=learning_rate,
+        weight_decay=wd) <--- wd
+    
+    for _ in range(ep): <--- ep
+                ...
+    return y_predictions
+```
+
+The function above is responsible for getting a certain ``weight_decay`` and `epochs number` to train our model. With all that, the results can be easily obtained by running the code. The number of neurons will be changed manually.
+
+#### 32 Neurons
+
+![rgbm32fdn](./fivedegree_gaussiannoise/results/training_grid_32neurons.png)
+
+* Yellow Noisy Curve: Noisy Data
+* Red Dots: Noisy Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
+#### 16 Neurons
+
+![rgbm16fdn](./fivedegree_gaussiannoise/results/training_grid_16neurons.png)
+
+* Yellow Noisy Curve: Noisy Data
+* Red Dots: Noisy Sample Data
+* Blue Curve: Fifth Degree Function
+* Orange Curve: Model Predictions
+
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
@@ -565,13 +629,18 @@ python -m venv .venv
 ./.venv/Scripts/Activate.ps1
 pip install -r requirements.txt
 ```
-Finally, execute the following scripts to run the **second example**.
+Initialize our dataset running the dataset python file.
 ```
 python ./fivedegree_gaussiannoise/gen_noisy_data.py
+```
+Finally, execute one (or more) of the following scripts to run the **second example scripts**.
+```
 python ./fivedegree_gaussiannoise/train_model.py
+python ./fivedegree_gaussiannoise/better_model.py
+python ./fivedegree_gaussiannoise/grid_weightdecay.py
 ```
 
-**Disclaimer:** Running this example may impact your PC performance.
+**Disclaimer:** Running these examples may impact your PC performance.
 
 -----
 

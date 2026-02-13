@@ -101,5 +101,5 @@ for x_feature in x_sample:
 plt.plot(x_values,y_clean)
 plt.plot(x_sample,y_sample,'+',color='red')
 plt.plot(x_sample,y_predictions)
-plt.savefig('fivedegree_gaussiannoise/results/training_results_wd.png')
+plt.savefig('fivedegree_gaussiannoise/results/training_results_grid.png')
 plt.close()
