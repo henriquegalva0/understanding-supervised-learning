@@ -360,6 +360,9 @@ Keeping the same `learning rate` and `epochs` we are ready to see the **evaluati
 * Red Dots: Noisy Sample Data
 * Blue Curve: Fifth Degree Function
 * Orange Curve: Model Predictions
+* Organization:
+    * Top graphs: 2 Hidden Layer Models (32; 64; 128 neurons)
+    * Bottom graphs: 3 Hidden Layer Models (32; 64; 128 neurons)
 
 What an output we got! Let's understand each results...
 
@@ -581,7 +584,7 @@ Again, our loss function is completely normal showing the evolution of our model
 This is one of our best performances until now! We can see clearly our model's ability to generalize. However it seens it got a bit too affected by the ``weight_decay`` value. For that, let's try again doing a grid research finding the best epoch number and weight decay combination!  
 
 ### Evaluation (Grid | Epoch vs Weight Decay)
-To ultimately evaluate and train our models, the following script was created: [grid_weightdecay.py](./fivedegree_gaussiannoise/grid_weightdecay.py). We will evaluate 6 models, 3 training with 500 epochs and other 3 training with 1000 epochs. In each group, the 3 will be trained with a weight decay of $1e-3$,$1e-4$ and $1e-5$, respectively. First to 32 neurons neural networks, then to 16 neurons.
+To ultimately evaluate and train our models using _Grid Search_, the following script was created: [grid_weightdecay.py](./fivedegree_gaussiannoise/grid_weightdecay.py). We will evaluate 6 models, 3 training with 500 epochs and other 3 training with 1000 epochs. In each group, the 3 will be trained with a weight decay of $1e-3$,$1e-4$ and $1e-5$, respectively. First to 32 neurons neural networks, then to 16 neurons.
 
 ```
 def train_eval(wd,ep,selected_model):
@@ -598,7 +601,7 @@ def train_eval(wd,ep,selected_model):
 
 The function above is responsible for getting a certain ``weight_decay`` and `epochs number` to train our model. With all that, the results can be easily obtained by running the code. The number of neurons will be changed manually.
 
-#### 32 Neurons
+#### 32 Neurons Model
 
 ![rgbm32fdn](./fivedegree_gaussiannoise/results/training_grid_32neurons.png)
 
@@ -606,8 +609,11 @@ The function above is responsible for getting a certain ``weight_decay`` and `ep
 * Red Dots: Noisy Sample Data
 * Blue Curve: Fifth Degree Function
 * Orange Curve: Model Predictions
+* Organization:
+    * Top graphs: 500 Epochs Models (1e-3; 1e-4; 1e-5 weight decay value)
+    * Bottom graphs: 1000 Epochs Models (1e-3; 1e-4; 1e-5 weight decay value)
 
-#### 16 Neurons
+#### 16 Neurons Model
 
 ![rgbm16fdn](./fivedegree_gaussiannoise/results/training_grid_16neurons.png)
 
@@ -615,7 +621,17 @@ The function above is responsible for getting a certain ``weight_decay`` and `ep
 * Red Dots: Noisy Sample Data
 * Blue Curve: Fifth Degree Function
 * Orange Curve: Model Predictions
+* Organization:
+    * Top graphs: 500 Epochs Models (1e-3; 1e-4; 1e-5 weight decay value)
+    * Bottom graphs: 1000 Epochs Models (1e-3; 1e-4; 1e-5 weight decay value)
 
+## Conclusion
+
+The experimental results demonstrate the critical sensitivity of deep learning models to hyperparameter tuning. It is evident that the interplay between Weight Decay ($L_2$ regularization) and training duration (epochs) directly dictates the model's ability to navigate the loss landscape. While some architectures struggled with early convergence or vanishing gradients, the optimized models achieved a robust balance - minimizing the Generalization Error without falling into the pitfalls of overfitting or underfitting.
+
+Training neural networks is a nuanced engineering challenge. Often, the temptation is to deploy high-capacity architectures for simple regressions, but as observed, the key lies in the precision of the optimization strategy rather than raw complexity. True mastery of the field stems from iterative testing, empirical analysis, and the ability to interpret how weight updates influence the model's decision boundaries.
+
+This project traced the evolution from a baseline MLP (Multi-Layer Perceptron) to a refined architecture utilizing modern adaptive optimizers (Adam) and weight initialization (Xavier) techniques. By applying z-score normalization to both features and targets, we stabilized the gradient flow and tackled common numerical stability issues. Our objective was successfully met, providing a solid foundation for exploring more complex stochastic phenomena in the future. This is just the beginning of the journey into deep representation learning.
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
