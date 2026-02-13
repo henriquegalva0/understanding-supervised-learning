@@ -6,10 +6,10 @@ This repository was created to really understand how to build neural networks an
 # 5 Degree Function
 
 ## Mission
-On the [first example](fivedegree/) of this repository, we're going to build and train a neural network capable of predicting values following the behaviour of a five degree math function.
+On the [first example](fivedegree/) of this repository, we're going to build and train a neural network capable of predicting values following the behaviour of a fifth degree math function.
 
 ### Data
-Firstly, we'll define an array with _x values_ and _y values_ in [gen_data.py](fivedegree/gen_data.py) to create the target that our neural network must recreate. The following five degree function will be our task:
+Firstly, we'll define an array with _x values_ and _y values_ in [gen_data.py](fivedegree/gen_data.py) to create the target that our neural network must recreate. The following fifth degree function will be our task:
 
 $$f(x) = x^5 - 6x^3 + 2x $$
 
@@ -98,11 +98,11 @@ As you see on the graph below: the orange line represents the results that, of c
 
 ![bt5dg](fivedegree/img/before_training.png)
 
-Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the five degree function.
+Now, our task is to train and optimize the model's parameters until it is capable of predicting the behaviour of the fifth degree function.
 
 ## Training
 
-This is the magic part of our first example. Here the model will learn how to reproduce our five degree function. The first step is to instantiate our loss function.
+This is the magic part of our first example. Here the model will learn how to reproduce our fifth degree function. The first step is to instantiate our loss function.
 
 $$ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
 
@@ -199,7 +199,7 @@ Using this line, you can clearly see the change made by the optimizer on the ten
 ```
 
 ### Evaluation (after training)
-The moment of truth has come. Now we are going to change the mode of the model to evaluation to see how did it went predicting the behaviour of the five degree function after training (the same way we did before training).
+The moment of truth has come. Now we are going to change the mode of the model to evaluation to see how did it went predicting the behaviour of the fifth degree function after training (the same way we did before training).
 ```
 model.eval()
 
@@ -216,7 +216,7 @@ And the results... didn't change?
 
 ![at5dg](fivedegree/img/after_training.png)
 
-That's because a five degree function has such a complexity that our little neural network can't stand a chance. Let's change a little bit our parameters to see what happens.
+That's because a fifth degree function has such a complexity that our little neural network can't stand a chance. Let's change a little bit our parameters to see what happens.
 
 ## Changing Parameters
 
@@ -252,7 +252,7 @@ After changing completely our _learning rate, epochs_ and _number of neurons_, t
 
 ![atc5dg](fivedegree/img/after_training_changes.png)
 
-It's clear that the model could replicate most of the five degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably as you may see on diagram bellow...
+It's clear that the model could replicate most of the fifth degree function curve, which shows us that it's capable of understanding behaviours based on complex patterns. On the other hand, its size has increased considerably as you may see on diagram bellow...
 
 ![nn5dg](fivedegree/img/nn_representation.svg)
 
@@ -282,11 +282,11 @@ python ./fivedegree/train_model.py
 # Gaussian Noise
 
 ## Mission
-On the [first example](fivedegree/), we solved our task optimizing a neural network to understand the behaviour of a five degree function. Now, the task is quite the same, except for the fact that the data won't be so clean to read.
+On the [first example](fivedegree/), we solved our task optimizing a neural network to understand the behaviour of a fifth degree function. Now, the task is quite the same, except for the fact that the data won't be so clean to read.
 
 ### Data
 
-Even though the pattern created by selected values from a five degree function is quite complex to understand, if you train with clean data, eventually your model will catch up and easily recognize the pattern.
+Even though the pattern created by selected values from a fifth degree function is quite complex to understand, if you train with clean data, eventually your model will catch up and easily recognize the pattern.
 
 The task now is to make the learning path of our model harder. We're adding _gaussian noise_ (or white noise) to the data sample in [gen_noisy_data.py](fivedegree_gaussiannoise/gen_noisy_data.py).
 
@@ -321,8 +321,61 @@ This plot of our sample data shows how little and noisy the information given to
 
 The archicteture used to build and train our model will be the same as in [build_model.py](fivedegree/build_model.py]) and [train_model.py](fivedegree/train_model.py]), however we'll be running a couple of experiments with the size of the neural network.
 
-Inside [train_model.py](fivedegree_gaussiannoise/train_model.py]), the number of neurons will be changed for 16, 32 and 64 for 2 hidden layers, then, 3 hidden layers.
+Within the file [train_model.py](fivedegree_gaussiannoise/train_model.py), the number of neurons will be changed to 32, 64, and 128 for 2 hidden layers, and then for 3 hidden layers. This manual change is called **Grid Search** and is not the most efficient way to find the ideal neural network architecture, but it clearly shows the difference between each one (great for technical analyses within a research repository).
 
+The two-layer hidden model will be defined exactly as we did in [build_model.py](fivedegree/build_model.py), but now it allows us to define the number of neurons when instantiating the model (the three layer model is built follows the same idea).
+
+```
+class two_layer_model(tt.nn.Module):
+    def __init__(self,n):
+        super().__init__()
+        self.linear1= nn.Linear(1,n,bias=True)
+        self.linear2= nn.Linear(n,n,bias=True)
+        self.linear3= nn.Linear(n,1,bias=True)
+        self.ReLU = tt.nn.ReLU()
+
+    def forward(self,x):
+        x = (x-mean)/std
+        x1 = self.ReLU(self.linear1(x))
+        x2 = self.ReLU(self.linear2(x1))
+        return self.linear3(x2)
+```
+
+Keeping the same `learning rate` and `epochs` we are ready to see the **evaluation** results of the "_noisy models_":
+
+![tgfdn](/fivedegree_gaussiannoise/img/training_grid.png)
+
+What an output we got! Let's understand each results...
+
+### 2 Hidden Layers Models
+
+#### 32 neurons
+Although the model performed better than most tests (considering its limitations), unfortunately, in the latest sample values, there are evident inaccuracies. These inaccuracies are mainly given by the fact that the neural network has **insufficient capacity** to capture the complexity of that specific curve.
+
+Each "hinge" in our curve is given by an output from our neurons. This occurs due to the selected activation function, the _Rectified Linear Unit_ (or _ReLU_), which causes the line to bend every time a _"new neuron activates"_. Thus, with only 32 possible bending points, the fifth degree complex function cannot be adequately described.
+
+#### 64 neurons
+This result is slightly better among the worst. It still fails to track the steep descent on the left and the sharp rise on the right simultaneously.
+
+The reason behind is shared with the 32 neuron layer. These two neural networks are quite slower when understanding complex pattterns due to the **Gradient Descent Speed**. With only `500` epochs and a low `learning_rate` ($1 \times 10^{-3}$), these smaller models haven't had enough updates to move their "hinges" into the correct positions.
+
+Not only this, but our `optimizer` can't update, since the weight changes aren't as effective as before to the overall fit. It is stuck!
+
+#### 128 neurons
+The model could find enough neurons to develop bendings to the curves. This shows us that increasing layers to a neural network not always will be the answer to our problems.
+
+### 3 Hidden Layers Models
+
+A lucky parameter arrangement allowed our 32-neuron neural network to be accurate. However, the other results show complete inaccuracy. This is due to:
+
+* As we added more neurons and layers, the "error landscape" became much more complex. With a simple `SGD optimizer`, these larger models often get stuck not being able to evolve properly.
+* The strange horizontal behaviour of the 64 and 128 neurons neural networks may be due to 2 factors:
+    * If the weights are initialized such that the input to a ReLU is always negative, our neuron "dies" and outputs 0, sending no gradient back. So the neural network can't "understand" a thing.
+    * Since we aren't normalizing `y values`, the loss (MSE) sometimes starts extremely high, which can lead to huge initial gradients that "break" the weights of larger models early in training.
+
+Although we can easily solve the problems of this three hidden layer model, this is not the path we should follow, since such architectural complexity is not necessary to solve a fifth degree function task.
+
+Our idea should be to **improve** the 2-layer-32-neuron model since it showed us his capability of solving problems.
 
 ## Setup Instructions (Second Example)
 To run the code, if you haven't done this yet, start by cloning the github repository.
@@ -339,7 +392,10 @@ pip install -r requirements.txt
 Finally, execute the following scripts to run the **second example**.
 ```
 python ./fivedegree_gaussiannoise/gen_noisy_data.py
+python ./fivedegree_gaussiannoise/train_model.py
 ```
+
+**Disclaimer:** Running this example may impact your PC performance.
 
 -----
 
